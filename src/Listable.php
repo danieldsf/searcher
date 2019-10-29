@@ -24,15 +24,27 @@ trait Listable {
         'ct' => ['%', '%'],
         'sw' => ['', '%'], //'starts with',
         'ew' => ['%', ''], //'ends with',
+
+        'nct' => ['%', '%'],
+        'nsw' => ['', '%'], //'starts with',
+        'new' => ['%', ''],
+        // Dates:
+        'last_months' => '',
+        'last_days' => '',
+        'last_years' => '',
+
+        'next_months' => '',
+        'next_days' => '',
+        'next_years' => '',
         //
-        'dteq' => '',
-        'dtneq' => '',
-        'dtgt' => '',
-        'dtlt' => '',
-        'dtge' => '',
-        'dtle' => '',
-        'dtbt' => '',
-        'dtnbt' => '',
+        'greater_than' => '',
+        'greater_than_equals' => '',
+        
+        'lower_than' => '',
+        'lower_than_equals' => '',
+
+        'equals_to' => '',
+        //
     ];
 
     private static function fixSearch($query, $key, $value, $and = false){
@@ -63,21 +75,15 @@ trait Listable {
                     case 'sw':
                     case 'ew':
                     # code...
-                        $term = strtolower($value[1]);
-                        if($value[0] == 'ct'){
-                            $term = "%".$term."%";
-                        } else if($value[0] == 'sw') {
-                            $term = $term."%";
-                        } else {
-                            $term = "%".$term;
-                        }
-                        $db = self::getDatabase();
-                        #dd($db);
-                        if(self::getDatabase() == 'mysql'){
-                            $query = $and ? $query->whereRaw("lower($key) like ?", [$term]) : $query->orWhereRaw("lower($key) like ?", [$term]);
-                        }else{
-                            $query = $and ? $query->where($key, 'ilike', $term) : $query->orWhere($key, 'ilike', $term);
-                        }
+                        $query = Filter::whereContains($query, $key, self::$filterCriterias[$value[0]], $value[1], true, $and);                       
+                    break;
+
+                    // Strings:
+                    case 'nct':
+                    case 'nsw':
+                    case 'new':
+                    # code...
+                        $query = Filter::whereContains($query, $key, self::$filterCriterias[$value[0]], $value[1], false, $and);                       
                     break;
                     
                     default:

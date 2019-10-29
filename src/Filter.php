@@ -22,9 +22,32 @@ class Filter {
         return $driver;
     }
 
-    
 
-    public function whereNull($query, $key, $positive = true, $and = true){
+    public static function whereContains($query, $key, $operation, $value, $positive = true, $and = true){
+        $term = strtolower($value);
+
+        $term = $operation[0].$term.$operation[1];
+
+        $db = self::getDatabaseDriverName();
+        if($positive){
+
+            if(self::getDatabase() == 'mysql'){
+                $query = $and ? $query->whereRaw("lower($key) like ?", [$term]) : $query->orWhereRaw("lower($key) like ?", [$term]);
+            }else{
+                $query = $and ? $query->where($key, 'ilike', $term) : $query->orWhere($key, 'ilike', $term);
+            }
+        }else{
+            if(self::getDatabase() == 'mysql'){
+                $query = $and ? $query->whereNotRaw("lower($key) like ?", [$term]) : $query->orWhereNotRaw("lower($key) like ?", [$term]);
+            }else{
+                $query = $and ? $query->whereNot($key, 'ilike', $term) : $query->orWhereNot($key, 'ilike', $term);
+            }
+        }
+
+        return $query;
+    }
+
+    public static function whereNull($query, $key, $positive = true, $and = true){
         //
         if($positive){
             $query = $and ? $query->whereNull($key) : $query->orWhereNull($key);
@@ -35,7 +58,7 @@ class Filter {
         return $query;
     }
 
-    public function whereBetween($query, $key, $firstValue, $secondValue, $positive = true, $and = true){
+    public static function whereBetween($query, $key, $firstValue, $secondValue, $positive = true, $and = true){
         // 
         if($positive){
             $query = $and ? $query->whereBetween($key, [$firstValue, $secondValue]) : $query->orWhereBetween($key, [$firstValue, $secondValue]);
