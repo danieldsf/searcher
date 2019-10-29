@@ -1,6 +1,6 @@
 <?php
 
-namespace Danieldsf\Searcher\src;
+namespace Danieldsf\Searcher;
 
 use Illuminate\Support\Facades\DB;
 
@@ -16,9 +16,9 @@ trait Listable {
 
         'nl' => 'has no value',
         'nnl' => 'has value',
-        
+
         'em' => 'is empty',
-        
+
         'bt' => 'between',
 
         'ct' => ['%', '%'],
@@ -39,7 +39,7 @@ trait Listable {
         //
         'greater_than' => '',
         'greater_than_equals' => '',
-        
+
         'lower_than' => '',
         'lower_than_equals' => '',
 
@@ -49,7 +49,7 @@ trait Listable {
 
     private static function fixSearch($query, $key, $value, $and = false){
         try {
-            
+
             $value = explode(",", $value);
             $count = count($value);
 
@@ -65,8 +65,8 @@ trait Listable {
                     case 'gte':
                     case 'eq':
                     case 'neq':
-                        $query = $and ? 
-                            $query->where($key, self::$filterCriterias[$value[0]], $value[1]) : 
+                        $query = $and ?
+                            $query->where($key, self::$filterCriterias[$value[0]], $value[1]) :
                             $query->orWhere($key, self::$filterCriterias[$value[0]],$value[1]);
                     break;
 
@@ -75,7 +75,7 @@ trait Listable {
                     case 'sw':
                     case 'ew':
                     # code...
-                        $query = Filter::whereContains($query, $key, self::$filterCriterias[$value[0]], $value[1], true, $and);                       
+                        $query = Filter::whereContains($query, $key, self::$filterCriterias[$value[0]], $value[1], true, $and);
                     break;
 
                     // Strings:
@@ -83,9 +83,9 @@ trait Listable {
                     case 'nsw':
                     case 'new':
                     # code...
-                        $query = Filter::whereContains($query, $key, self::$filterCriterias[$value[0]], $value[1], false, $and);                       
+                        $query = Filter::whereContains($query, $key, self::$filterCriterias[$value[0]], $value[1], false, $and);
                     break;
-                    
+
                     default:
                         # code...
                     break;
@@ -116,7 +116,7 @@ trait Listable {
         if(method_exists($self, 'getSorts')){
             $sorts = $self::getSorts();
         }
-        
+
         $table = self::getTable();
 
         if(method_exists($self, 'getIncludes')){
@@ -128,7 +128,7 @@ trait Listable {
         if(in_array($sort, $sorts)){
             $query = $query->orderBy($sort, $orientation);
         }
-        
+
         $per_page = request('per_page', 'all');
 
         if($per_page == 'all'){
@@ -138,19 +138,19 @@ trait Listable {
         return $query->paginate($per_page);
     }
 
-    
+
 
     public function scopeListAll($query, $request, $paginate = true){
-        
+
         try {
             $a = $request->all();
 
             $and = $request->and;
 
             $filters = $sorts = ['id', 'comments'];
-            
-            $self = self::class;            
-            
+
+            $self = self::class;
+
             $groupBy = '';
 
             $table = self::getTable();
@@ -160,16 +160,16 @@ trait Listable {
                 foreach($filters as $filter){
                     if(strpos($filter, $table) === 0){
                         if($groupBy == ''){
-                            $groupBy = $filter;        
+                            $groupBy = $filter;
                         }
-                        $groupBy .= ',' . $filter;    
+                        $groupBy .= ',' . $filter;
                     }
                 }
             }
 
             if(method_exists($self, 'getIncludes')){
                 $includes = $self::getIncludes();
-                
+
                 foreach ($includes as $key => $value) {
                     if(count($value) == 3){
                         $query = $query
@@ -180,7 +180,7 @@ trait Listable {
                         ->leftJoin($value[3], $value[4], '=', $value[5]);
                     }
                 }
-    
+
                 $query = $query
                 ->select($table . '.*')
                 ->groupBy(DB::raw($groupBy));
@@ -195,28 +195,28 @@ trait Listable {
                     }
                 }
             }
-            
+
             if($paginate)
-                return $query->paginateSearch();  
+                return $query->paginateSearch();
             return $query;
-            
+
         } catch (\Exception $exception) {
             //throw $th;
-            
+
             #dd($exception);
 
             app('sentry')->captureException($exception);
 
-            
+
             if($paginate)
-                return $query->paginateSearch();  
+                return $query->paginateSearch();
             return $query;
         }
     }
 
     public function scopeFuzzySearch($query, $value, $paginate = true){
         $fuzzySearch = "%$value%";
-        
+
         $columns = self::getFilters();
 
         $self = self::class;
@@ -230,16 +230,16 @@ trait Listable {
             foreach($filters as $filter){
                 if(strpos($filter, $table) === 0){
                     if($groupBy == ''){
-                        $groupBy = $filter;        
+                        $groupBy = $filter;
                     }
-                    $groupBy .= ',' . $filter;    
+                    $groupBy .= ',' . $filter;
                 }
             }
         }
 
         if(method_exists($self, 'getIncludes')){
             $includes = $self::getIncludes();
-            
+
             foreach ($includes as $key => $value) {
                 if(count($value) == 3){
                     $query = $query
@@ -259,7 +259,7 @@ trait Listable {
 
         foreach ($columns as $key => $column) {
             $db = self::getDatabase();
-            
+
             if($key == 0){
                 if(self::getDatabase() == 'mysql'){
                     $query = $query->whereRaw("lower($column) like ?", strtolower($fuzzySearch));
@@ -276,7 +276,7 @@ trait Listable {
         }
 
         if($paginate)
-            return $query->paginateSearch();  
+            return $query->paginateSearch();
         return $query;
     }
 

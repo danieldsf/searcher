@@ -1,9 +1,9 @@
 <?php
 
-namespace Danieldsf\Searcher\src;
+namespace Danieldsf\Searcher;
 
 trait DeleteMany {
-    
+
     public static function deleteMany($ids){
         return self::query()
         ->whereIn('id', $ids)

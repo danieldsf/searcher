@@ -1,6 +1,6 @@
 <?php
 
-namespace Danieldsf\Searcher\src;
+namespace Danieldsf\Searcher;
 
 use Illuminate\Support\ServiceProvider;
 
