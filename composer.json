@@ -6,10 +6,19 @@
             "email": "daniel.dsfarias@gmail.com"
         }
     ],
-    "require": {
-        "php": "^7.3",
-        "illuminate/database": "^6.3",
-        "nesbot/carbon": "^2.25",
-        "illuminate/support": "^6.3"
-    }
+    "require-dev": {
+        "nesbot/carbon": "^2.25"
+    },
+    "autoload": {
+        "psr-4": {
+            "Danieldsf\\Searcher\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
