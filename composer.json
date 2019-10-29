@@ -1,0 +1,16 @@
+{
+    "name": "danieldsf/searcher",
+    "authors": [
+        {
+            "name": "Daniel Farias",
+            "email": "daniel.dsfarias@gmail.com"
+        }
+    ],
+    "require": {
+        "illuminate/database": "^6.3",
+        "nesbot/carbon": "^2.25",
+        "illuminate/support": "^6.3",
+        "spatie/laravel-query-builder": "^2.3",
+        "tucker-eric/eloquentfilter": "^2.0"
+    }
+}
