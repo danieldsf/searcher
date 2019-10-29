@@ -14,7 +14,9 @@ trait Relatable {
             $size = count($pieces);
             for ($i = 0; $i < $size; $i++) {
                 $key = strtolower($pieces[$i]);
-                $query = $query->orWhere('name', 'ilike', "%$key%");
+                $query = Filter::whereContains($query, 'name', 'ct', $key, true, false);
+                #$query = $query->orWhere('name', 'ilike', "%$key%");
+
             }
         })
         ->orderBy('name')
@@ -25,6 +27,8 @@ trait Relatable {
 
     public function getRelated()
     {
-        return $this->getRelatedQuery()->where('id', '<>', $this->id)->get();
+        return $this
+        ->getRelatedQuery()
+        ->where('id', '<>', $this->id)->get();
     }
 }
