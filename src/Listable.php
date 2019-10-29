@@ -201,12 +201,8 @@ trait Listable {
             return $query;
 
         } catch (\Exception $exception) {
-            //throw $th;
-
-            #dd($exception);
 
             app('sentry')->captureException($exception);
-
 
             if($paginate)
                 return $query->paginateSearch();
@@ -215,7 +211,7 @@ trait Listable {
     }
 
     public function scopeFuzzySearch($query, $value, $paginate = true){
-        $fuzzySearch = "%$value%";
+        #$fuzzySearch = "%$value%";
 
         $columns = self::getFilters();
 
@@ -249,7 +245,6 @@ trait Listable {
                     ->leftJoin($value[0], $value[1], '=', $value[2])
                     ->leftJoin($value[3], $value[4], '=', $value[5]);
                 }
-                #$query = $query->leftJoin($value[0], $value[1], '=', $value[2]);
             }
 
             $query = $query
@@ -258,29 +253,15 @@ trait Listable {
         }
 
         foreach ($columns as $key => $column) {
-            $db = self::getDatabase();
-
             if($key == 0){
-                if(self::getDatabase() == 'mysql'){
-                    $query = $query->whereRaw("lower($column) like ?", strtolower($fuzzySearch));
-                }else{
-                    $query = $query->where($column, 'ilike', strtolower($fuzzySearch));
-                }
+                $query = Filter::whereContains($query, $key, 'ct', strtolower($fuzzySearch), true, true);
             }else{
-                if(self::getDatabase() == 'mysql'){
-                    $query = $query->orWhereRaw("lower($column) like ?", strtolower($fuzzySearch));
-                }else{
-                    $query = $query->orWhere($column, 'ilike', strtolower($fuzzySearch));
-                }
+                $query = Filter::whereContains($query, $key, 'ct', strtolower($fuzzySearch), true, false);
             }
         }
 
         if($paginate)
             return $query->paginateSearch();
         return $query;
-    }
-
-    public static function getDatabase(){
-        return config('database.default');
     }
 }
