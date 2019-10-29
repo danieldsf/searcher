@@ -7,6 +7,9 @@
         }
     ],
     "require-dev": {
+        "illuminate/database": "^6.4",
+        "illuminate/http": "^6.4",
+        "illuminate/support": "^6.4",
         "nesbot/carbon": "^2.25"
     },
     "autoload": {
