@@ -211,7 +211,7 @@ trait Listable {
     }
 
     public function scopeFuzzySearch($query, $value, $paginate = true){
-        #$fuzzySearch = "%$value%";
+        $fuzzySearch = $value;
 
         $columns = self::getFilters();
 
