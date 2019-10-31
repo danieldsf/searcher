@@ -253,6 +253,7 @@ trait Listable {
         }
 
         foreach ($columns as $key => $column) {
+            dd($column);
             if($key == 0){
                 $query = Filter::whereContains($query, $key, ['%', '%'], $value, true, true);
             }else{
