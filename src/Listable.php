@@ -211,7 +211,7 @@ trait Listable {
     }
 
     public function scopeFuzzySearch($query, $value, $paginate = true){
-        #$fuzzySearch = $value;
+        $fuzzySearch = $value;
 
         $columns = self::getFilters();
 
@@ -253,11 +253,10 @@ trait Listable {
         }
 
         foreach ($columns as $key => $column) {
-            dd($column);
             if($key == 0){
-                $query = Filter::whereContains($query, $key, ['%', '%'], $value, true, true);
+                $query = Filter::whereContains($query, $column, ['%', '%'], $fuzzySearch, true, true);
             }else{
-                $query = Filter::whereContains($query, $key, ['%', '%'], $value, true, false);
+                $query = Filter::whereContains($query, $column, ['%', '%'], $fuzzySearch, true, false);
             }
         }
 
