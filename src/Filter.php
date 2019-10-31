@@ -24,6 +24,7 @@ class Filter {
 
 
     public static function whereContains($query, $key, $operation, $value, $positive = true, $and = true){
+        dd($value);
         $term = strtolower($value);
 
         $term = $operation[0].$term.$operation[1];
