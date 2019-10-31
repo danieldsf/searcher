@@ -261,7 +261,7 @@ trait Listable {
         }
 
         if($paginate)
-            return $query->paginateSearch()->toSql();
-        return $query->toSql();
+            return $query->paginateSearch();
+        return $query;
     }
 }
