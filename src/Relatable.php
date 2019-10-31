@@ -14,9 +14,7 @@ trait Relatable {
             $size = count($pieces);
             for ($i = 0; $i < $size; $i++) {
                 $key = strtolower($pieces[$i]);
-                $query = Filter::whereContains($query, 'name', 'ct', $key, true, false);
-                #$query = $query->orWhere('name', 'ilike', "%$key%");
-
+                $query = Filter::whereContains($query, 'name', ['%s', '%s'], $key, true, false);
             }
         })
         ->orderBy('name')
